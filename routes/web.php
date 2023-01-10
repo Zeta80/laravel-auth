@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,17 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('admin/', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('admin.dashboard');
+
+
+// Middleware per la verifica di autenticazione
+// prefix per admin/.. nell'url del browser
+// name per il nome della rotta
+Route::middleware(['auth', 'verified'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('projects', ProjectController::class)->parameters(['project' => 'post:slug']);
+    });
 
 require __DIR__ . '/auth.php';
